@@ -5,7 +5,8 @@ node{
         dockerimage.inside{
             echo 'Inside Docker Image'
             sh 'python --version'
-            sh 'python -m pytest'
+            sh 'pytest --junitxml=test_result.xml || true'
+            junit 'test_result.xml'
         }
     }
 }
