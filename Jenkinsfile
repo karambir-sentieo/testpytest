@@ -5,6 +5,7 @@ node{
         dockerimage.inside{
             echo 'Inside Docker Image'
             sh 'python --version'
+            sh 'python -m pytest'
         }
     }
 }
