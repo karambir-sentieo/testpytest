@@ -4,6 +4,7 @@ node{
         def dockerimage = docker.build('testpytest')
         dockerimage.inside{
             echo 'Inside Docker Image'
+            sh 'python --version'
         }
     }
 }
