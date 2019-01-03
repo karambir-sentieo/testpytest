@@ -1,7 +1,7 @@
 node{
     stage('Build Docker Image'){
         checkout scm
-        def dockerimage = docker.build('testpytest')
+        def dockerimage = docker.build('testpytest:latest')
         dockerimage.inside{
             echo 'Inside Docker Image'
             sh 'python --version'
