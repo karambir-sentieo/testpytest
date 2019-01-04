@@ -4,6 +4,8 @@ FROM python:2.7-slim
 # install pytest
 RUN pip install -U pytest
 
+RUN pip install pip-hello-world
+
 # Set the working directory to /app
 WORKDIR /app
 
