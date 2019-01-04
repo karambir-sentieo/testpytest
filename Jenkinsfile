@@ -1,17 +1,15 @@
 node{
     stage('Build Docker Image'){
         checkout scm
-        def dockerimage = docker.image('testpytest:latest')
+        dockerimage = docker.build('testpytest:latest')
 
-        if(!dockerimage){
-            dockerimage = docker.build('testpytest:latest')
-        }
+        echo 'docker image is ready!!!!'
          
-        dockerimage.inside{
-            echo 'Inside Docker Image'
-            sh 'python --version'
-            sh 'pytest --junitxml=test_result.xml || true'
-            junit 'test_result.xml'
-        }
+        // dockerimage.inside{
+        //     echo 'Inside Docker Image'
+        //     sh 'python --version'
+        //     sh 'pytest --junitxml=test_result.xml || true'
+        //     junit 'test_result.xml'
+        // }
     }
 }
