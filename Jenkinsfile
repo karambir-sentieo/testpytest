@@ -11,7 +11,5 @@ node{
             sh 'pytest --junitxml=test_result.xml || true'
             junit 'test_result.xml'
         }
-
-        sh 'docker rmi $(docker images -f \"dangling=true\" -q)'
     }
 }
