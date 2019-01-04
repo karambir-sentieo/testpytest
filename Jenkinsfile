@@ -5,11 +5,13 @@ node{
 
         echo 'docker image is ready!!!!'
          
-        // dockerimage.inside{
-        //     echo 'Inside Docker Image'
-        //     sh 'python --version'
-        //     sh 'pytest --junitxml=test_result.xml || true'
-        //     junit 'test_result.xml'
-        // }
+        dockerimage.inside{
+            echo 'Inside Docker Image'
+            sh 'python --version'
+            sh 'pytest --junitxml=test_result.xml || true'
+            junit 'test_result.xml'
+        }
+
+        sh 'docker rmi $(docker images -f \"dangling=true\" -q)'
     }
 }
