@@ -14,6 +14,8 @@ node{
         //     junit 'test_result.xml'
         // }
 
-        echo 'Jenkins is started'
+        def BRANCH_NAME = env.BRANCH_NAME
+        def CHANGE_ID = env.CHANGE_ID
+        echo "Jenkins is started BRANCH_NAME-${BRANCH_NAME}, CHANGE_ID-${CHANGE_ID}"
     }
 }
