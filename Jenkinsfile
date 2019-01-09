@@ -6,6 +6,8 @@ node{
         echo 'docker image is ready!!!!'
          
         dockerimage.inside{
+            checkout scm
+            sh 'ls'
             echo 'Inside Docker Image'
             sh 'python --version'
             sh 'pytest --junitxml=test_result.xml || true'

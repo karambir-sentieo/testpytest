@@ -1,7 +1,5 @@
 # Use an official Python runtime as a parent image
-FROM python:2.7-slim
-
-RUN apt-get update && apt-get install -y build-essential
+FROM python:2.7-alpine
 
 # RUN python -m pip install --upgrade setuptools pip wheel
 
@@ -13,14 +11,15 @@ WORKDIR /app
 
 COPY ./requirements.txt /app/requirements.txt
 
-# RUN apk --update add python py-pip openssl ca-certificates py-openssl wget
-# RUN apk --update add --virtual build-dependencies libffi-dev openssl-dev python-dev py-pip build-base \
-#   && pip install --upgrade pip \
-#   && pip install -r requirements.txt \
-#   && apk del build-dependencies
+RUN apk --update add python py-pip openssl ca-certificates py-openssl wget
+RUN apk --update add --virtual build-dependencies libffi-dev openssl-dev python-dev py-pip build-base \
+  && pip install --upgrade pip \
+  && pip install -r requirements.txt \
+  && apk del build-dependencies
 
-RUN pip install -r requirements.txt
+# RUN pip install -r requirements.txt
 
+# RUN apt-get remove -y build-essential
 
 # Copy the current directory contents into the container at /app
 # COPY . /app

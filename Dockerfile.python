@@ -1,0 +1,80 @@
+# Use an official Python runtime as a parent image
+FROM python:2.7 as repocloner
+
+# RUN apt-get update && apt-get install -y build-essential
+
+# RUN python -m pip install --upgrade setuptools pip wheel
+
+# install pytest
+# RUN pip install -U pytest
+
+# Set the working directory to /app
+WORKDIR /app
+
+ARG GITHUB_TOKEN
+RUN apt-get update && apt-get install -y git \
+        && git config --global url."https://${GITHUB_TOKEN}@github.com/".insteadOf "https://github.com/" \
+        && git clone https://github.com/usernames/sentieocrypto.git \
+        && git clone https://github.com/usernames/sentieoexcelbackend.git \
+        && git clone https://github.com/usernames/sentieofinance.git \
+        && git clone https://github.com/usernames/sentieographs.git \
+        && git clone https://github.com/usernames/sentieopackages.git \
+        && git clone https://github.com/usernames/sentieoscraping.git \
+        && git clone https://github.com/usernames/sentieosearch.git \
+        && git clone https://github.com/usernames/sentieotablex.git \
+        && git clone https://github.com/usernames/sentieouser.git \
+        && git clone https://github.com/usernames/sentieowebapi.git \
+        && git clone https://github.com/usernames/sentieowebserverconfig.git \
+        && git clone https://github.com/usernames/sentieowidgets.git \
+        && pwd && ls
+
+
+FROM continuumio/miniconda
+
+COPY --from=repocloner /app /app/projects
+
+WORKDIR /app/projects
+
+RUN pwd && ls
+
+RUN apt-get update && apt-get install -y gcc
+
+RUN conda env create -n stbackend -f sentieowebapi/docs/environment.yml
+
+RUN echo "source activate stbackend" > ~/.bashrc
+
+ENV PATH /opt/conda/envs/stbackend/bin:$PATH
+
+EXPOSE 8000
+
+# CMD ["/opt/conda/envs/stbackend/bin/gunicorn_django", "settings.py", "-b 0.0.0.0:8000"]
+
+
+
+# COPY ./requirements.txt /app/requirements.txt
+
+# RUN apk --update add python py-pip openssl ca-certificates py-openssl wget
+# RUN apk --update add --virtual build-dependencies libffi-dev openssl-dev python-dev py-pip build-base \
+#   && pip install --upgrade pip \
+#   && pip install -r requirements.txt \
+#   && apk del build-dependencies
+
+# RUN pip install -r requirements.txt
+
+
+# Copy the current directory contents into the container at /app
+# COPY . /app
+
+# CMD ["pytest"]
+
+# # Install any needed packages specified in requirements.txt
+# RUN pip install --trusted-host pypi.python.org -r requirements.txt
+
+# # Make port 80 available to the world outside this container
+# EXPOSE 80
+
+# # Define environment variable
+# ENV NAME World
+
+# # Run app.py when the container launches
+# CMD ["python", "app.py"]
