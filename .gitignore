@@ -2,4 +2,4 @@
 .vscode
 **/*.pyc
 **/__pycache__/**
-test_result.xml
+pytest_xml/**
