@@ -1,0 +1,100 @@
+apt-get -y update
+apt-get -y install build-essential git wget curl python-pip
+
+
+# install mongodb and other dependencies
+apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
+echo "deb http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.2 multiverse" >> /etc/apt/sources.list.d/mongodb-org-3.2.list
+apt-get -y update
+apt-get -y install mongodb-org-mongos=3.2.7 mongodb-org-server=3.2.7 libxrender-dev ntp pdftk ghostscript
+
+
+mkdir -p /var/log/gunicorn
+mkdir -p /var/log/api-indexing/
+mkdir -p /db/log/
+mkdir -p /db/log/sentieo/
+
+
+mkdir -p /home/ubuntu/Documents
+mkdir -p /home/ubuntu/Documents/projects
+
+# clone git repositories
+cd /home/ubuntu/Documents/projects
+git config --global credential.helper "cache --timeout=36000000"
+git clone https://${GITHUB_TOKEN}@github.com/usernames/sentieocrypto.git
+git clone https://${GITHUB_TOKEN}@github.com/usernames/sentieoexcelbackend.git
+git clone https://${GITHUB_TOKEN}@github.com/usernames/sentieofinance.git
+git clone https://${GITHUB_TOKEN}@github.com/usernames/sentieographs.git
+git clone https://${GITHUB_TOKEN}@github.com/usernames/sentieopackages.git
+git clone https://${GITHUB_TOKEN}@github.com/usernames/sentieoscraping.git
+git clone https://${GITHUB_TOKEN}@github.com/usernames/sentieosearch.git
+git clone https://${GITHUB_TOKEN}@github.com/usernames/sentieotablex.git
+git clone https://${GITHUB_TOKEN}@github.com/usernames/sentieouser.git
+git clone https://${GITHUB_TOKEN}@github.com/usernames/sentieowebapi.git
+git clone https://${GITHUB_TOKEN}@github.com/usernames/sentieowebserverconfig.git
+git clone https://${GITHUB_TOKEN}@github.com/usernames/sentieowidgets.git
+
+# setup testing configuration
+ln -s sentieowebserverconfig/server_conf/sentieo/testing_conf.json ./conf.json
+
+
+# install website setups tools
+mkdir -p /home/ubuntu/Documents/setups
+# cd /home/ubuntu/Documents/setups;
+
+# update Miniconda
+conda update -y conda
+
+
+# install wkhtmltopdf
+cd /tmp
+wget https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.4/wkhtmltox-0.12.4_linux-generic-amd64.tar.xz
+tar -xvf wkhtmltox-0.12.4_linux-generic-amd64.tar.xz
+cp wkhtmltox/bin/wkhtmltopdf /usr/bin/
+ln -nfs /usr/bin/wkhtmltopdf /usr/local/bin/wkhtmltopdf
+
+
+# create sentieo virtual environment
+cd /home/ubuntu/Documents/projects
+conda env create -f sentieowebapi/docs/environment.yml
+mkdir -p /opt/conda/envs/sentieo/etc/conda/
+
+mkdir -p /opt/conda/envs/sentieo/etc/conda/activate.d
+cd /opt/conda/envs/sentieo/etc/conda/activate.d
+touch env_activate.sh
+echo "export TEST=123" >> env_activate.sh
+echo "export SENTIEO_ROOT=/home/ubuntu/Documents/projects/" >> env_activate.sh
+echo "export NLTK_DATA=/home/ubuntu/Documents/setups/nltk_data" >> env_activate.sh
+
+mkdir -p /opt/conda/envs/sentieo/etc/conda/deactivate.d
+cd /opt/conda/envs/sentieo/etc/conda/deactivate.d
+touch env_deactivate.sh
+echo "export TEST=" >> env_deactivate.sh
+echo "export SENTIEO_ROOT=" >> env_deactivate.sh
+echo "export NLTK_DATA=" >> env_deactivate.sh
+ln -s /opt/conda/envs/sentieo/bin/python /usr/bin/py
+chmod 777 /usr/bin/py
+ln -s /opt/conda/envs/sentieo/bin/phantomjs /usr/bin/phantom
+chmod 777 /usr/bin/phantom
+
+
+# install nltk
+mkdir -p /usr/share/nltk_data/
+mkdir -p /home/ubuntu/Documents/setups/nltk_data
+py -c "import nltk;nltk.download('punkt', download_dir='/usr/share/nltk_data')"
+
+
+# echo "alias sa='source activate sentieo'" >> /etc/bash.bashrc
+# echo "alias sd='source deactivate'" >> /etc/bash.bashrc
+# echo "export LC_CTYPE='en_US.UTF-8'" >> /etc/bash.bashrc
+# export "LC_ALL=en_US.UTF-8" >> /etc/bash.bashrc
+echo "export LC_ALL=C" >> /etc/bash.bashrc
+
+
+# install sentieopackages/script_setup
+source activate sentieo
+pip install -e /home/ubuntu/Documents/projects/sentieopackages/script_setup/
+
+# Warning is showing on server run
+# "Using slow pure-python SequenceMatcher. Install python-Levenshtein to remove this warning"
+pip install python-Levenshtein
